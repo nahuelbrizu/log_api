@@ -95,6 +95,9 @@ GEM
     domain_name (0.5.20190701)
       unf (>= 0.0.5, < 1.0.0)
     dotenv (2.8.1)
+    dotenv-rails (2.8.1)
+      dotenv (= 2.8.1)
+      railties (>= 3.2)
     erubi (1.12.0)
     faraday (2.7.11)
       base64
@@ -198,6 +201,8 @@ GEM
       nio4r (~> 2.0)
     racc (1.7.3)
     rack (2.2.8)
+    rack-cors (2.0.1)
+      rack (>= 2.0.0)
     rack-protection (3.1.0)
       rack (~> 2.2, >= 2.2.4)
     rack-test (2.1.0)
@@ -290,6 +295,7 @@ DEPENDENCIES
   debug
   devise
   dotenv
+  dotenv-rails
   jquery-rails
   mailgun-ruby
   mysql2 (~> 0.5)
@@ -299,6 +305,7 @@ DEPENDENCIES
   omniauth-rails_csrf_protection
   omniauth-twitter
   puma (~> 5.0)
+  rack-cors
   rails (~> 7.0.8)
   rspec-rails
   stripe
