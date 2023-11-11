@@ -20,6 +20,8 @@ module AppNamedPoly
         prompt: 'select_account', # To force the account selection prompt
       }
     end
+    Bundler.require(*Rails.groups)
+    Dotenv::Railtie.load
 
     # Configuration for the application, engines, and railties goes here.
     #       config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }

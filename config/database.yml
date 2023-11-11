@@ -50,6 +50,10 @@ test:
 #
 production:
   <<: *default
+  adapter: mysql2
+  encoding: utf8mb4
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   database: app_named_poly_production
   username: app_named_poly
   password: <%= ENV["APP_NAMED_POLY_DATABASE_PASSWORD"] %>
+  url: <%= ENV['DATABASE_URL'] %>

@@ -7,7 +7,6 @@ ruby "3.0.3"
 gem "rails", "~> 7.0.8"
 
 # Use mysql as the database for Active Record
-gem "mysql2", "~> 0.5"
 
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", "~> 5.0"
@@ -27,6 +26,7 @@ gem 'stripe'
 gem 'jquery-rails'
 gem "omniauth-rails_csrf_protection"
 
+gem 'rack-cors'
 
 # Use Redis adapter to run Action Cable in production
 # gem "redis", "~> 4.0"
@@ -59,3 +59,9 @@ group :development do
   # gem "spring"
 end
 
+group :production do
+  gem "mysql2", "~> 0.5"
+end
+group :development, :test do
+  gem 'dotenv-rails', groups: [:development, :test]
+end
