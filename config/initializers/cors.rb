@@ -1,8 +1,7 @@
-# config/application.rb
-
-config.middleware.insert_before 0, Rack::Cors do
+# config/initializers/cors.rb
+Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins 'https://nahuelbrizu.github.io/loginTesting/'
+    origins 'https://nahuelbrizu.github.io'
 
     resource '*',
              headers: :any,
