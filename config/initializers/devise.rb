@@ -3,6 +3,7 @@
 Devise.setup do |config|
 
   require 'devise/orm/active_record'
+  config.secret_key = ENV['SECRET_KEY_BASE']
   config.omniauth :google_oauth2, ENV['GOOGLE_CLIENT_ID'], ENV['GOOGLE_CLIENT_SECRET']
   config.sign_out_via = :get
   config.mailer_sender = '<mailgun email domain>'
