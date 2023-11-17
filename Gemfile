@@ -27,6 +27,8 @@ gem 'jquery-rails'
 gem "omniauth-rails_csrf_protection"
 
 gem 'rack-cors'
+# Add to Gemfile
+gem 'unicorn'
 
 # Use Redis adapter to run Action Cable in production
 # gem "redis", "~> 4.0"
