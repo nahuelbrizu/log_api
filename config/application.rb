@@ -13,7 +13,7 @@ module AppNamedPoly
     config.middleware.use ActionDispatch::Session::CookieStore
 
     config.middleware.use OmniAuth::Builder do
-      provider :google_oauth2, '772918967244-k93kvjnb41dfhnp477vo2hgmafvi29i1.apps.googleusercontent.com', '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', {
+      provider :google_oauth2, ENV['GOOGLE_CLIENT_ID'], ENV['GOOGLE_CLIENT_SECRET'], {
         scope: 'email, profile, uid', # Specify the scopes you need
         access_type: 'offline', # For obtaining refresh tokens
         name: 'google', # An optional provider name (useful if you have multiple providers)

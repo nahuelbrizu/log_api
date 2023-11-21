@@ -1,0 +1,19 @@
+current directory: /home/steel/nawe/firebase/vol4/app_named_poly/vendor/bundle/ruby/3.0.0/gems/unf_ext-0.0.8.2/ext/unf_ext
+/home/steel/.asdf/installs/ruby/3.0.3/bin/ruby extconf.rb
+checking for -lstdc++... yes
+creating Makefile
+
+current directory: /home/steel/nawe/firebase/vol4/app_named_poly/vendor/bundle/ruby/3.0.0/gems/unf_ext-0.0.8.2/ext/unf_ext
+make DESTDIR\= sitearchdir\=./.gem.20231120-8193-pef3tz sitelibdir\=./.gem.20231120-8193-pef3tz clean
+
+current directory: /home/steel/nawe/firebase/vol4/app_named_poly/vendor/bundle/ruby/3.0.0/gems/unf_ext-0.0.8.2/ext/unf_ext
+make DESTDIR\= sitearchdir\=./.gem.20231120-8193-pef3tz sitelibdir\=./.gem.20231120-8193-pef3tz
+compiling unf.cc
+linking shared-object unf_ext.so
+
+current directory: /home/steel/nawe/firebase/vol4/app_named_poly/vendor/bundle/ruby/3.0.0/gems/unf_ext-0.0.8.2/ext/unf_ext
+make DESTDIR\= sitearchdir\=./.gem.20231120-8193-pef3tz sitelibdir\=./.gem.20231120-8193-pef3tz install
+/usr/bin/install -c -m 0755 unf_ext.so ./.gem.20231120-8193-pef3tz
+
+current directory: /home/steel/nawe/firebase/vol4/app_named_poly/vendor/bundle/ruby/3.0.0/gems/unf_ext-0.0.8.2/ext/unf_ext
+make DESTDIR\= sitearchdir\=./.gem.20231120-8193-pef3tz sitelibdir\=./.gem.20231120-8193-pef3tz clean

@@ -1,0 +1,18 @@
+current directory: /home/steel/nawe/firebase/vol4/app_named_poly/vendor/bundle/ruby/3.0.0/gems/racc-1.7.3/ext/racc/cparse
+/home/steel/.asdf/installs/ruby/3.0.3/bin/ruby extconf.rb
+creating Makefile
+
+current directory: /home/steel/nawe/firebase/vol4/app_named_poly/vendor/bundle/ruby/3.0.0/gems/racc-1.7.3/ext/racc/cparse
+make DESTDIR\= sitearchdir\=./.gem.20231120-8193-cnr23z sitelibdir\=./.gem.20231120-8193-cnr23z clean
+
+current directory: /home/steel/nawe/firebase/vol4/app_named_poly/vendor/bundle/ruby/3.0.0/gems/racc-1.7.3/ext/racc/cparse
+make DESTDIR\= sitearchdir\=./.gem.20231120-8193-cnr23z sitelibdir\=./.gem.20231120-8193-cnr23z
+compiling cparse.c
+linking shared-object racc/cparse.so
+
+current directory: /home/steel/nawe/firebase/vol4/app_named_poly/vendor/bundle/ruby/3.0.0/gems/racc-1.7.3/ext/racc/cparse
+make DESTDIR\= sitearchdir\=./.gem.20231120-8193-cnr23z sitelibdir\=./.gem.20231120-8193-cnr23z install
+/usr/bin/install -c -m 0755 cparse.so ./.gem.20231120-8193-cnr23z/racc
+
+current directory: /home/steel/nawe/firebase/vol4/app_named_poly/vendor/bundle/ruby/3.0.0/gems/racc-1.7.3/ext/racc/cparse
+make DESTDIR\= sitearchdir\=./.gem.20231120-8193-cnr23z sitelibdir\=./.gem.20231120-8193-cnr23z clean
