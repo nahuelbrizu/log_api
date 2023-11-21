@@ -1,0 +1,18 @@
+current directory: /home/steel/nawe/firebase/vol4/app_named_poly/vendor/bundle/ruby/3.0.0/gems/cgi-0.3.6/ext/cgi/escape
+/home/steel/.asdf/installs/ruby/3.0.3/bin/ruby extconf.rb
+creating Makefile
+
+current directory: /home/steel/nawe/firebase/vol4/app_named_poly/vendor/bundle/ruby/3.0.0/gems/cgi-0.3.6/ext/cgi/escape
+make DESTDIR\= sitearchdir\=./.gem.20231120-8193-a7zd9t sitelibdir\=./.gem.20231120-8193-a7zd9t clean
+
+current directory: /home/steel/nawe/firebase/vol4/app_named_poly/vendor/bundle/ruby/3.0.0/gems/cgi-0.3.6/ext/cgi/escape
+make DESTDIR\= sitearchdir\=./.gem.20231120-8193-a7zd9t sitelibdir\=./.gem.20231120-8193-a7zd9t
+compiling escape.c
+linking shared-object cgi/escape.so
+
+current directory: /home/steel/nawe/firebase/vol4/app_named_poly/vendor/bundle/ruby/3.0.0/gems/cgi-0.3.6/ext/cgi/escape
+make DESTDIR\= sitearchdir\=./.gem.20231120-8193-a7zd9t sitelibdir\=./.gem.20231120-8193-a7zd9t install
+/usr/bin/install -c -m 0755 escape.so ./.gem.20231120-8193-a7zd9t/cgi
+
+current directory: /home/steel/nawe/firebase/vol4/app_named_poly/vendor/bundle/ruby/3.0.0/gems/cgi-0.3.6/ext/cgi/escape
+make DESTDIR\= sitearchdir\=./.gem.20231120-8193-a7zd9t sitelibdir\=./.gem.20231120-8193-a7zd9t clean
