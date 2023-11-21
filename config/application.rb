@@ -1,9 +1,9 @@
 require_relative "boot"
 
 require "rails/all"
+require 'dotenv'
+Dotenv.load
 
-# Require the gems listed in Gemfile, including any gems
-# you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
 module AppNamedPoly
@@ -20,20 +20,7 @@ module AppNamedPoly
         prompt: 'select_account', # To force the account selection prompt
       }
     end
-    Bundler.require(*Rails.groups)
-    Dotenv::Railtie.load
 
-    # Configuration for the application, engines, and railties goes here.
-    #       config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
-    # These settings can be overridden in specific environments using the files
-    # in config/environments, which are processed later.
-    #
-    # config.time_zone = "Central Time (US & Canada)"
-    # config.eager_load_paths << Rails.root.join("extras")
-
-    # Only loads a smaller set of middleware suitable for API only apps.
-    # Middleware like session, flash, cookies can be added back manually.
-    # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
   end
 end

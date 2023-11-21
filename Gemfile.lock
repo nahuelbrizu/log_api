@@ -299,7 +299,6 @@ DEPENDENCIES
   bootsnap
   debug
   devise
-  dotenv
   dotenv-rails
   jquery-rails
   mailgun-ruby
