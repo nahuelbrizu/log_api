@@ -32,3 +32,6 @@
 /.env
 /.env.*
 !/.env.example
+
+# Legacy secrets file (secrets come from ENV / credentials).
+/config/secrets.yml
