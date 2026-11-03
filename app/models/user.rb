@@ -21,7 +21,9 @@ class User < ApplicationRecord
   # 2. An existing account with the same email → link it, but only if the
   #    provider verified the email and the account is not yet linked to
   #    another provider (otherwise anyone could take over an account by
-  #    signing up at a provider with someone else's address).
+  #    signing up at a provider with someone else's address). If that
+  #    account was never confirmed, its password is replaced, since whoever
+  #    set it never proved they own the email.
   # 3. Otherwise → a new, already-confirmed user.
   #
   # Always returns a User; check #persisted? and #errors.
@@ -37,6 +39,9 @@ class User < ApplicationRecord
     existing = find_by(email: email.downcase)
     if existing
       if existing.provider.blank? && verified_email?(auth)
+        # An unconfirmed account may have been registered by someone else
+        # with this address: drop the password they chose before linking.
+        existing.password = Devise.friendly_token(32) unless existing.confirmed?
         existing.update(provider: auth.provider, uid: auth.uid.to_s)
         existing.confirm unless existing.confirmed?
       else

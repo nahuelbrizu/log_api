@@ -31,6 +31,22 @@ RSpec.describe User, type: :model do
     end
   end
 
+  it "replaces the password of an unconfirmed account when linking it (pre-hijack protection)" do
+    squatter = create(:user, :unconfirmed, email: "victim@example.com", password: "attacker-pass-1")
+    described_class.from_omniauth(auth_hash(provider: "google_oauth2", uid: "g", email: "victim@example.com"))
+
+    squatter.reload
+    expect(squatter).to be_confirmed
+    expect(squatter.provider).to eq("google_oauth2")
+    expect(squatter.valid_password?("attacker-pass-1")).to be(false)
+  end
+
+  it "keeps the password of a confirmed account when linking it" do
+    owner = create(:user, email: "owner@example.com")
+    described_class.from_omniauth(auth_hash(provider: "google_oauth2", uid: "g2", email: "owner@example.com"))
+    expect(owner.reload.valid_password?("s3cure-password")).to be(true)
+  end
+
   it "caps passwords at 72 characters (bcrypt limit)" do
     expect(build(:user, password: "a1" * 37)).not_to be_valid
   end
