@@ -1,13 +1,12 @@
 Rails.application.routes.draw do
-  resources :profiles
-  get 'home/index'
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  # Devise: /users/sign_in, /users/sign_up, /users/confirmation, ...
+  # OmniAuth: POST /users/auth/:provider → GET /users/auth/:provider/callback
   devise_for :users, controllers: {
     omniauth_callbacks: 'users/omniauth'
   }
 
-  get 'users/authcallback', to: 'users/omniauth#google_oauth2'
+  resources :profiles, except: %i[new edit]
 
-  # Defines the root path route ("/")
-  # root "articles#index"
+  get 'home/index'
+  root 'home#index'
 end

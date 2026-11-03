@@ -1,65 +1,27 @@
-class Users::OmniauthController < Devise::RegistrationsController
-  # github callback
-  def github
-    @user = User.create_from_provider_data(request.env['omniauth.auth'])
-    if @user.persisted?
-
-      session[:info] = request.env['omniauth.auth']
-
-      sign_in_and_redirect @user
-      set_flash_message(:notice, :success, kind: 'Github') if is_navigational_format?
-    else
-      flash[:error] = 'There was a problem signing you in through Github. Please register or try signing in later.'
-      redirect_to new_user_registration_url
-    end
+class Users::OmniauthController < Devise::OmniauthCallbacksController
+  User::OAUTH_PROVIDERS.each do |provider|
+    define_method(provider) { handle_callback }
   end
 
-  # twitter callback
-  def twitter
-    @user = User.create_from_provider_data(request.env['omniauth.auth'])
-    if @user.persisted?
-
-      session[:creds] = request.env['omniauth.auth']['extra']['access_token']
-
-      sign_in_and_redirect @user
-      set_flash_message(:notice, :success, kind: 'Twitter') if is_navigational_format?
-    else
-      flash[:error] = 'There was a problem signing you in through Twitter. Please register or try signing in later.'
-      redirect_to new_user_registration_url
-    end
-  end
-
-  # google callback
-  def google_oauth2
-    @user = User.create_from_provider_data(request.env['omniauth.auth'])
-    if @user.persisted?
-      sign_in_and_redirect @user
-      set_flash_message(:notice, :success, kind: 'Google') if is_navigational_format?
-    else
-      render 'There was a problem signing you in through Google. Please register or try signing in later.'
-      redirect_to new_user_registration_url
-    end
-  end
-
-  # facebook callback
-  def facebook
-    @user = User.create_from_provider_data(request.env['omniauth.auth'])
-    if @user.persisted?
-      sign_in_and_redirect @user
-      set_flash_message(:notice, :success, kind: 'Facebook') if is_navigational_format?
-    else
-      render = 'There was a problem signing you in through Facebook. Please register or try signing in later.'
-      redirect_to new_user_registration_url
-    end
-  end
-
-
-
+  # OmniAuth redirects here when the provider denies or errors out.
   def failure
-    render 'There was a problem signing you in. Please register or try signing in later.'
-    redirect_to new_user_registration_url # Redirect only once
+    render json: { error: 'authentication_failed', message: failure_message },
+           status: :unauthorized
   end
 
+  private
 
+  def handle_callback
+    auth = request.env['omniauth.auth']
+    user = User.from_omniauth(auth)
 
+    if user.persisted? && user.errors.empty?
+      sign_in(user, event: :authentication)
+      render json: { user: user.as_json(only: %i[id email name provider]) }, status: :ok
+    else
+      render json: { error: 'authentication_failed', provider: auth&.provider,
+                     messages: user.errors.full_messages },
+             status: :unprocessable_entity
+    end
+  end
 end

@@ -6,21 +6,13 @@ require "rails/all"
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
+# Load variables from .env (the plain `dotenv` gem does not auto-load).
+Dotenv.load
+
 module AppNamedPoly
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.0
-    config.middleware.use ActionDispatch::Session::CookieStore
-
-    config.middleware.use OmniAuth::Builder do
-      provider :google_oauth2, ENV['GOOGLE_CLIENT_ID'], ENV['GOOGLE_CLIENT_SECRET'], {
-        scope: 'email, profile, uid', # Specify the scopes you need
-        access_type: 'offline', # For obtaining refresh tokens
-        name: 'google', # An optional provider name (useful if you have multiple providers)
-        prompt: 'select_account', # To force the account selection prompt
-      }
-    end
-
     # Configuration for the application, engines, and railties goes here.
     #       config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
     # These settings can be overridden in specific environments using the files
@@ -33,5 +25,12 @@ module AppNamedPoly
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+
+    # API mode strips cookies/sessions, but Devise and OmniAuth need them
+    # (OmniAuth stores the OAuth `state` in the session). Sessions are kept
+    # server-side with activerecord-session_store (the `sessions` table).
+    config.session_store :active_record_store, key: '_log_api_session'
+    config.middleware.use ActionDispatch::Cookies
+    config.middleware.use config.session_store, config.session_options
   end
 end

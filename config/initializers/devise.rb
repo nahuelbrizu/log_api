@@ -36,9 +36,14 @@ Devise.setup do |config|
   # :mongoid (bson_ext recommended) by default. Other ORMs may be
   # available as additional gems.
   require 'devise/orm/active_record'
-  config.omniauth :google_oauth2, 'GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET'
-  config.sign_out_via = :get
-  config.mailer_sender = '<mailgun email domain>'
+  # OAuth providers. Credentials come from ENV (see .env.example).
+  config.omniauth :google_oauth2, ENV['GOOGLE_CLIENT_ID'], ENV['GOOGLE_CLIENT_SECRET'],
+                  scope: 'email,profile', prompt: 'select_account'
+  config.omniauth :facebook, ENV['FACEBOOK_APP_ID'], ENV['FACEBOOK_APP_SECRET'], scope: 'email'
+  config.omniauth :github, ENV['GITHUB_CLIENT_ID'], ENV['GITHUB_CLIENT_SECRET'], scope: 'user:email'
+  config.omniauth :twitter, ENV['TWITTER_API_KEY'], ENV['TWITTER_API_SECRET']
+  config.sign_out_via = :delete
+  config.mailer_sender = ENV.fetch('MAILER_SENDER', 'no-reply@example.com')
   config.parent_mailer = 'ActionMailer::Base'
   config.reconfirmable = false
   # ==> Configuration for any authentication mechanism
@@ -266,6 +271,8 @@ Devise.setup do |config|
   #
   # The "*/*" below is required to match Internet Explorer requests.
   # config.navigational_formats = ['*/*', :html, :turbo_stream]
+  # API-only app: never redirect, always answer 401 JSON when unauthenticated.
+  config.navigational_formats = []
 
   # The default HTTP method used to sign out a resource. Default is :delete.
 
