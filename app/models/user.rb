@@ -2,10 +2,18 @@ class User < ApplicationRecord
   OAUTH_PROVIDERS = %i[google_oauth2 facebook github twitter].freeze
 
   has_one :profile, dependent: :destroy
+  has_many :refresh_tokens, dependent: :delete_all
+  has_many :oauth_codes, dependent: :delete_all
 
-  devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable, :confirmable, :trackable,
-         :omniauthable, omniauth_providers: OAUTH_PROVIDERS
+  devise :database_authenticatable, :registerable, :recoverable,
+         :validatable, :confirmable, :trackable,
+         :jwt_authenticatable, jwt_revocation_strategy: JwtDenylist
+
+  # Only providers with credentials configured (config/initializers/devise.rb).
+  devise :omniauthable, omniauth_providers: Devise.omniauth_configs.keys
+
+  validates :name, length: { maximum: 100 }
+  validate :password_not_email, if: -> { password.present? }
 
   # Finds or creates the user for an OmniAuth callback.
   #
@@ -23,16 +31,16 @@ class User < ApplicationRecord
 
     email = auth.info.email.presence
     if email.nil?
-      return new.tap { |u| u.errors.add(:email, "no fue provisto por #{auth.provider}") }
+      return new.tap { |u| u.errors.add(:email, "was not provided by #{auth.provider}") }
     end
 
-    existing = find_by(email: email)
+    existing = find_by(email: email.downcase)
     if existing
       if existing.provider.blank? && verified_email?(auth)
         existing.update(provider: auth.provider, uid: auth.uid.to_s)
         existing.confirm unless existing.confirmed?
       else
-        existing.errors.add(:email, 'ya está registrado; iniciá sesión con tu método original')
+        existing.errors.add(:email, "is already registered; sign in with your original method")
       end
       return existing
     end
@@ -41,8 +49,8 @@ class User < ApplicationRecord
       provider: auth.provider,
       uid: auth.uid.to_s,
       email: email,
-      name: auth.info.name.presence || 'None',
-      password: Devise.friendly_token[0, 20]
+      name: auth.info.name.presence&.first(100),
+      password: Devise.friendly_token(32)
     ).tap do |u|
       u.skip_confirmation!
       u.save
@@ -51,9 +59,9 @@ class User < ApplicationRecord
 
   def self.verified_email?(auth)
     case auth.provider.to_s
-    when 'google_oauth2'
+    when "google_oauth2"
       ActiveModel::Type::Boolean.new.cast(auth.extra&.raw_info&.email_verified)
-    when 'github', 'facebook'
+    when "github", "facebook"
       # GitHub only exposes verified addresses here; Facebook requires a
       # confirmed email for the account.
       true
@@ -62,4 +70,10 @@ class User < ApplicationRecord
     end
   end
   private_class_method :verified_email?
+
+  private
+
+  def password_not_email
+    errors.add(:password, "must not be the same as the email") if password.casecmp?(email.to_s)
+  end
 end

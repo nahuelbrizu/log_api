@@ -12,21 +12,23 @@ gem "mysql2", "~> 0.5"
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", "~> 5.0"
 
-# Build JSON APIs with ease [https://github.com/rails/jbuilder]
-# gem "jbuilder"
-gem 'rspec-rails'
-gem 'devise'
-gem 'omniauth-github'
-gem 'omniauth-twitter'
-gem 'omniauth-google-oauth2'
-gem 'omniauth-facebook'
-gem 'dotenv'
-gem 'activerecord-session_store'
-gem 'mailgun-ruby'
-gem 'stripe'
-gem 'jquery-rails'
-gem "omniauth-rails_csrf_protection"
+# Authentication: Devise (passwords, confirmation, reset) + JWT access tokens
+gem "devise", "~> 4.9"
+gem "devise-jwt", "~> 0.12"
 
+# Social login
+gem "omniauth", "~> 2.1"
+gem "omniauth-github"
+gem "omniauth-twitter"
+gem "omniauth-google-oauth2"
+gem "omniauth-facebook"
+
+# CORS for browser clients and request throttling
+gem "rack-cors"
+gem "rack-attack"
+
+# Load variables from .env in development/test (see config/application.rb)
+gem "dotenv"
 
 # Use Redis adapter to run Action Cable in production
 # gem "redis", "~> 4.0"
@@ -46,12 +48,11 @@ gem "bootsnap", require: false
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 
-# Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
-# gem "rack-cors"
-
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri mingw x64_mingw ]
+  gem "rspec-rails", "~> 6.1"
+  gem "factory_bot_rails"
 end
 
 group :development do

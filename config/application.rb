@@ -1,6 +1,14 @@
 require_relative "boot"
 
-require "rails/all"
+require "rails"
+# Only the frameworks an auth API needs (no Action Cable, Active Storage,
+# Action Mailbox or Action Text, which would add routes and config).
+require "active_model/railtie"
+require "active_job/railtie"
+require "active_record/railtie"
+require "action_controller/railtie"
+require "action_mailer/railtie"
+require "action_view/railtie"
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -26,11 +34,23 @@ module AppNamedPoly
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
 
-    # API mode strips cookies/sessions, but Devise and OmniAuth need them
-    # (OmniAuth stores the OAuth `state` in the session). Sessions are kept
-    # server-side with activerecord-session_store (the `sessions` table).
-    config.session_store :active_record_store, key: '_log_api_session'
+    # Authentication is stateless (JWT bearer tokens). The only thing that
+    # needs a session is the OmniAuth handshake: the OAuth `state` param and
+    # the client's redirect_uri/PKCE challenge must survive the round trip to
+    # the provider. A short-lived, encrypted cookie is enough for that, so no
+    # session table is needed. SameSite=Lax still sends the cookie on the
+    # provider's top-level GET redirect back to the callback.
+    config.session_store :cookie_store,
+                         key: "_auth_oauth_handshake",
+                         expire_after: 15.minutes,
+                         same_site: :lax,
+                         secure: Rails.env.production?,
+                         httponly: true
     config.middleware.use ActionDispatch::Cookies
     config.middleware.use config.session_store, config.session_options
+
+    # Unknown routes and unhandled exceptions render the same JSON error
+    # envelope as the controllers instead of HTML pages.
+    config.exceptions_app = ->(env) { ErrorsController.action(:show).call(env) }
   end
 end
