@@ -24,7 +24,7 @@ module OmniauthHelpers
 
   # Runs the browser part of the flow and returns the redirect Location.
   def run_oauth_flow(provider, challenge:, redirect_uri: REDIRECT_URI)
-    get "/auth/#{provider}", params: { redirect_uri: redirect_uri, code_challenge: challenge,
+    get "/auth/#{provider}", params: { return_to: redirect_uri, code_challenge: challenge,
                                        code_challenge_method: "S256" }
     expect(response).to have_http_status(:redirect)
     follow_redirect! # -> /auth/:provider/callback

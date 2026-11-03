@@ -1,6 +1,6 @@
 # Short-lived, single-use code returned to the frontend after a social
-# login. It is bound to the redirect_uri and PKCE challenge sent when the
-# flow started, so only the client that started the flow can redeem it.
+# login. It is bound to the return_to URI and PKCE challenge sent when the
+# flow started (return_to), so only the client that started the flow can redeem it.
 class OauthCode < ApplicationRecord
   belongs_to :user
 
@@ -24,7 +24,7 @@ class OauthCode < ApplicationRecord
   end
 
   # Marks the code used and returns its user, or nil when the code is
-  # unknown, expired, already used, or the redirect_uri / PKCE verifier do
+  # unknown, expired, already used, or the return_to / PKCE verifier do
   # not match. A code is burnt on the first attempt, even a failed one.
   def self.redeem(code:, code_verifier:, redirect_uri:)
     record = find_by(code_digest: digest(code))

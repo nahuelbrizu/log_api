@@ -1,6 +1,6 @@
 module Auth
   # POST /auth/oauth/token
-  #   { "code": "...", "code_verifier": "...", "redirect_uri": "..." }
+  #   { "code": "...", "code_verifier": "...", "return_to": "..." }
   #
   # Exchanges the one-time code delivered to the frontend at the end of a
   # social login for a token pair.
@@ -9,7 +9,7 @@ module Auth
       user = OauthCode.redeem(
         code: params.require(:code),
         code_verifier: params.require(:code_verifier),
-        redirect_uri: params.require(:redirect_uri)
+        redirect_uri: params.require(:return_to)
       )
 
       unless user&.active_for_authentication?

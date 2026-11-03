@@ -4,8 +4,8 @@ module Auth
   # OmniAuth has already verified the provider's `state` param against the
   # handshake cookie. Here we find/create the user, mint a one-time code
   # bound to the PKCE challenge, and redirect the browser back to the
-  # allowlisted redirect_uri with ?code=... (never with the tokens).
-  # Errors are reported to the same redirect_uri as ?error=...
+  # allowlisted return_to URI with ?code=... (never with the tokens).
+  # Errors are reported to the same URI as ?error=...
   class OmniauthCallbacksController < Devise::OmniauthCallbacksController
     User::OAUTH_PROVIDERS.each do |provider|
       define_method(provider) { handle_callback }
@@ -22,11 +22,11 @@ module Auth
 
     def handle_callback
       flow = request.env["omniauth.params"] || {}
-      redirect_uri = flow["redirect_uri"]
+      redirect_uri = flow["return_to"]
       unless Oauth::RedirectPolicy.allowed_redirect_uri?(redirect_uri) &&
              Oauth::RedirectPolicy.valid_challenge?(flow["code_challenge"], flow["code_challenge_method"])
         return render_error(:bad_request, "invalid_oauth_flow",
-                            "Login was not started with a valid redirect_uri and code_challenge")
+                            "Login was not started with a valid return_to and code_challenge")
       end
 
       user = User.from_omniauth(request.env["omniauth.auth"])
@@ -41,7 +41,7 @@ module Auth
     end
 
     def redirect_or_render(status, code, message, redirect_error:)
-      redirect_uri = (request.env["omniauth.params"] || {})["redirect_uri"]
+      redirect_uri = (request.env["omniauth.params"] || {})["return_to"]
       if Oauth::RedirectPolicy.allowed_redirect_uri?(redirect_uri)
         redirect_to Oauth::RedirectPolicy.build_redirect(redirect_uri, error: redirect_error),
                     allow_other_host: true

@@ -11,14 +11,20 @@ module Oauth
   # Instead of a CSRF token (an API-only app has no page to embed one in),
   # every login must carry:
   #
-  #   * redirect_uri   - must exactly match OAUTH_REDIRECT_ALLOWLIST
+  #   * return_to      - where the browser is sent at the end; must exactly
+  #                      match an entry of OAUTH_REDIRECT_ALLOWLIST
   #   * code_challenge - PKCE S256 challenge; the one-time code returned at
   #                      the end is only exchangeable with its verifier
   #
   # Requests without them are rejected before reaching the provider. OmniAuth
   # stores the query params in the session, so the callback gets them back.
+  #
+  # Every other query param is dropped: several strategies copy params such
+  # as redirect_uri, state, scope or client_options straight into the
+  # provider's authorize URL, and clients must not be able to tamper with it.
   class RequestGuard
     PATH = %r{\A/auth/(?<provider>[a-z0-9_]+)/?\z}
+    ALLOWED_PARAMS = %w[return_to code_challenge code_challenge_method].freeze
 
     def initialize(app)
       @app = app
@@ -31,9 +37,9 @@ module Oauth
       request = Rack::Request.new(env)
       params = request.GET
 
-      unless RedirectPolicy.allowed_redirect_uri?(params["redirect_uri"])
-        return error(400, "invalid_redirect_uri",
-                     "redirect_uri is missing or not in OAUTH_REDIRECT_ALLOWLIST")
+      unless RedirectPolicy.allowed_redirect_uri?(params["return_to"])
+        return error(400, "invalid_return_to",
+                     "return_to is missing or not in OAUTH_REDIRECT_ALLOWLIST")
       end
 
       unless RedirectPolicy.valid_challenge?(params["code_challenge"], params["code_challenge_method"])
@@ -41,6 +47,10 @@ module Oauth
                      "code_challenge (PKCE, S256) is missing or malformed")
       end
 
+      env["QUERY_STRING"] = Rack::Utils.build_query(params.slice(*ALLOWED_PARAMS))
+      env.delete("rack.request.query_hash")
+      env.delete("rack.request.query_string")
+      env.delete("action_dispatch.request.query_parameters")
       @app.call(env)
     end
 

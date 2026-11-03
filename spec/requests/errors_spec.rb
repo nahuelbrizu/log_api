@@ -29,3 +29,21 @@ RSpec.describe "Health, errors and CORS", type: :request do
     expect(response.headers["Access-Control-Allow-Origin"]).to be_nil
   end
 end
+
+RSpec.describe "Error pages in production mode", type: :request do
+  around do |example|
+    env_config = Rails.application.env_config
+    original = env_config.slice("action_dispatch.show_exceptions", "action_dispatch.show_detailed_exceptions")
+    env_config["action_dispatch.show_exceptions"] = true
+    env_config["action_dispatch.show_detailed_exceptions"] = false
+    example.run
+  ensure
+    env_config.merge!(original)
+  end
+
+  it "renders unknown routes as the JSON error envelope" do
+    get "/does-not-exist"
+    expect(response).to have_http_status(:not_found)
+    expect(json).to eq("error" => { "code" => "not_found", "message" => "Not Found" })
+  end
+end

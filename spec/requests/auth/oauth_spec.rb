@@ -6,24 +6,24 @@ RSpec.describe "Social login (OAuth)", type: :request do
   let(:challenge) { verifier_and_challenge.last }
 
   describe "starting the flow" do
-    it "rejects a redirect_uri that is not allowlisted" do
-      get "/auth/github", params: { redirect_uri: "https://evil.example/cb", code_challenge: challenge }
-      expect_error(:bad_request, "invalid_redirect_uri")
+    it "rejects a return_to that is not allowlisted" do
+      get "/auth/github", params: { return_to: "https://evil.example/cb", code_challenge: challenge }
+      expect_error(:bad_request, "invalid_return_to")
     end
 
     it "rejects prefix tricks on an allowed URI" do
-      get "/auth/github", params: { redirect_uri: "#{OmniauthHelpers::REDIRECT_URI}/../evil",
+      get "/auth/github", params: { return_to: "#{OmniauthHelpers::REDIRECT_URI}/../evil",
                                     code_challenge: challenge }
-      expect_error(:bad_request, "invalid_redirect_uri")
+      expect_error(:bad_request, "invalid_return_to")
     end
 
     it "requires a PKCE challenge" do
-      get "/auth/github", params: { redirect_uri: OmniauthHelpers::REDIRECT_URI }
+      get "/auth/github", params: { return_to: OmniauthHelpers::REDIRECT_URI }
       expect_error(:bad_request, "invalid_code_challenge")
     end
 
     it "rejects the plain PKCE method" do
-      get "/auth/github", params: { redirect_uri: OmniauthHelpers::REDIRECT_URI,
+      get "/auth/github", params: { return_to: OmniauthHelpers::REDIRECT_URI,
                                     code_challenge: challenge, code_challenge_method: "plain" }
       expect_error(:bad_request, "invalid_code_challenge")
     end
@@ -39,7 +39,7 @@ RSpec.describe "Social login (OAuth)", type: :request do
       expect(location).not_to include("access_token", "refresh_token")
 
       json_post "/auth/oauth/token", code: code_from(location), code_verifier: verifier,
-                                     redirect_uri: OmniauthHelpers::REDIRECT_URI
+                                     return_to: OmniauthHelpers::REDIRECT_URI
       expect(response).to have_http_status(:ok)
       expect(json.dig("user", "email")).to eq("octo@example.com")
       expect(json.dig("user", "provider")).to eq("github")
@@ -61,7 +61,7 @@ RSpec.describe "Social login (OAuth)", type: :request do
 
     it "codes are single use" do
       code = code_from(run_oauth_flow(:github, challenge: challenge))
-      body = { code: code, code_verifier: verifier, redirect_uri: OmniauthHelpers::REDIRECT_URI }
+      body = { code: code, code_verifier: verifier, return_to: OmniauthHelpers::REDIRECT_URI }
 
       json_post "/auth/oauth/token", body
       expect(response).to have_http_status(:ok)
@@ -73,17 +73,17 @@ RSpec.describe "Social login (OAuth)", type: :request do
       code = code_from(run_oauth_flow(:github, challenge: challenge))
 
       json_post "/auth/oauth/token", code: code, code_verifier: pkce_pair.first,
-                                     redirect_uri: OmniauthHelpers::REDIRECT_URI
+                                     return_to: OmniauthHelpers::REDIRECT_URI
       expect_error(:bad_request, "invalid_grant")
 
       json_post "/auth/oauth/token", code: code, code_verifier: verifier,
-                                     redirect_uri: OmniauthHelpers::REDIRECT_URI
+                                     return_to: OmniauthHelpers::REDIRECT_URI
       expect_error(:bad_request, "invalid_grant")
     end
 
-    it "rejects a different redirect_uri" do
+    it "rejects a different return_to" do
       code = code_from(run_oauth_flow(:github, challenge: challenge))
-      json_post "/auth/oauth/token", code: code, code_verifier: verifier, redirect_uri: "myapp://oauth"
+      json_post "/auth/oauth/token", code: code, code_verifier: verifier, return_to: "myapp://oauth"
       expect_error(:bad_request, "invalid_grant")
     end
 
@@ -91,7 +91,7 @@ RSpec.describe "Social login (OAuth)", type: :request do
       code = code_from(run_oauth_flow(:github, challenge: challenge))
       travel 2.minutes do
         json_post "/auth/oauth/token", code: code, code_verifier: verifier,
-                                       redirect_uri: OmniauthHelpers::REDIRECT_URI
+                                       return_to: OmniauthHelpers::REDIRECT_URI
         expect_error(:bad_request, "invalid_grant")
       end
     end
