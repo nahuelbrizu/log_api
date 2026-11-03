@@ -1,0 +1,12 @@
+.git
+.github
+.idea
+.bundle
+vendor/bundle
+.env
+.env.*
+!.env.example
+log/*
+tmp/*
+config/master.key
+config/secrets.yml
