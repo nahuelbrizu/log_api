@@ -10,20 +10,25 @@ Rails.application.configure do
 
   # Do not eager load code on boot.
   config.eager_load = false
-  config.action_mailer.default_url_options = { host: 'localhost', port: 3003 }
+  config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
   config.action_mailer.raise_delivery_errors = false
   config.action_mailer.perform_caching = false
 
-  config.action_mailer.delivery_method = :smtp
-
-  config.action_mailer.smtp_settings = {
-    address: 'smtp.mailgun.org',
-    # port: 587,
-    domain: ENV['MAILER_DOMAIN'],
-    authentication: 'plain',
-    user_name: ENV['MAILER_USERNAME'],
-    password: ENV['MAILER_PASSWORD']
-  }
+  if ENV['MAILER_USERNAME'].present?
+    config.action_mailer.delivery_method = :smtp
+    config.action_mailer.smtp_settings = {
+      address: 'smtp.mailgun.org',
+      # port: 587,
+      domain: ENV['MAILER_DOMAIN'],
+      authentication: 'plain',
+      user_name: ENV['MAILER_USERNAME'],
+      password: ENV['MAILER_PASSWORD']
+    }
+  else
+    # Without Mailgun credentials, write emails to tmp/mails/ instead.
+    config.action_mailer.delivery_method = :file
+    config.action_mailer.file_settings = { location: Rails.root.join('tmp/mails') }
+  end
   # Show full error reports.
   config.consider_all_requests_local = true
 
