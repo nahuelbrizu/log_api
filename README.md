@@ -10,6 +10,8 @@ autenticación** para tu frontend web (SPA) o app móvil:
   cookies de sesión: todo funciona con `Authorization: Bearer`.
 - Perfil de usuario (`/profiles`) y cuenta propia (`/me`).
 - CORS configurable, rate limiting, errores JSON uniformes, sin enumeración de usuarios.
+- **Mini UI de demostración** en `/ui/` (login, registro, confirmación, contraseña
+  olvidada, login social y perfil), sin build ni dependencias.
 
 Stack: Ruby 3.2 · Rails 7.0 (`api_only`) · MySQL 8 · Devise + devise-jwt ·
 OmniAuth · rack-cors · rack-attack · RSpec.
@@ -22,15 +24,16 @@ La referencia completa de la API está en [`docs/openapi.yaml`](docs/openapi.yam
 ## Índice
 
 1. [Puesta en marcha](#puesta-en-marcha)
-2. [Configuración (variables de entorno)](#configuración-variables-de-entorno)
-3. [Cómo funciona la autenticación](#cómo-funciona-la-autenticación)
-4. [Endpoints](#endpoints)
-5. [Ejemplos con curl](#ejemplos-con-curl)
-6. [Login social desde una SPA o una app móvil](#login-social-desde-una-spa-o-una-app-móvil)
-7. [Errores y rate limiting](#errores-y-rate-limiting)
-8. [Tests y CI](#tests-y-ci)
-9. [Producción](#producción)
-10. [Decisiones de seguridad](#decisiones-de-seguridad)
+2. [UI de demostración](#ui-de-demostración)
+3. [Configuración (variables de entorno)](#configuración-variables-de-entorno)
+4. [Cómo funciona la autenticación](#cómo-funciona-la-autenticación)
+5. [Endpoints](#endpoints)
+6. [Ejemplos con curl](#ejemplos-con-curl)
+7. [Login social desde una SPA o una app móvil](#login-social-desde-una-spa-o-una-app-móvil)
+8. [Errores y rate limiting](#errores-y-rate-limiting)
+9. [Tests y CI](#tests-y-ci)
+10. [Producción](#producción)
+11. [Decisiones de seguridad](#decisiones-de-seguridad)
 
 ---
 
@@ -83,6 +86,40 @@ curl -s -H 'Content-Type: application/json' \
   -d '{"email":"demo@example.com","password":"demo-password-123"}' \
   localhost:3000/auth/sign_in
 ```
+
+---
+
+## UI de demostración
+
+El proyecto trae una mini interfaz en **http://localhost:3000/ui/** para probar
+todo desde el navegador, sin escribir un frontend:
+
+- Ingresar, crear cuenta, reenviar la confirmación y "olvidé mi contraseña".
+- Botones de login social para cada proveedor configurado (OAuth + PKCE).
+- Cuenta: perfil (crear y editar), cambiar nombre y contraseña, cerrar sesión
+  (en este dispositivo o en todos).
+- Los links de los emails de confirmación y reseteo abren la UI, que completa el
+  paso sola.
+
+Son tres archivos estáticos en [`public/ui/`](public/ui) (HTML, CSS y JS sin
+build), servidos por el mismo Rails, así que no hace falta configurar CORS. Sirven
+también como ejemplo de cliente: [`public/ui/app.js`](public/ui/app.js) muestra
+cómo guardar los tokens, renovarlos con el refresh token y hacer el login social
+con PKCE.
+
+**Se activa sola en desarrollo** (`DEMO_UI`, activo por defecto solo en
+`development`). Mientras está activa:
+
+- `<API_URL>/ui/` se agrega a `OAUTH_REDIRECT_ALLOWLIST`.
+- Si no definiste `CONFIRMATION_URL` ni `RESET_PASSWORD_URL`, los links de los
+  emails apuntan a la UI.
+
+Abrila con la misma URL que `API_URL` (por defecto `http://localhost:3000`, no
+`127.0.0.1`): el login social compara la URL de vuelta de forma exacta.
+
+En producción está apagada. Para usarla ahí, definí `DEMO_UI=true` y
+`RAILS_SERVE_STATIC_FILES=1`. Es una demo: guarda el refresh token en
+`sessionStorage`, así que para una app real evaluá cómo lo vas a proteger.
 
 ---
 

@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   # Social login (OmniAuth, mounted by Devise):
-  #   GET  /auth/:provider?redirect_uri=...&code_challenge=...  -> provider
-  #   GET  /auth/:provider/callback                             -> redirect_uri?code=...
+  #   GET  /auth/:provider?return_to=...&code_challenge=...     -> provider
+  #   GET  /auth/:provider/callback                             -> return_to?code=...
   devise_for :users, path: "", only: :omniauth_callbacks,
                      controllers: { omniauth_callbacks: "auth/omniauth_callbacks" }
 

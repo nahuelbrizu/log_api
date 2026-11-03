@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>log_api · Acceso</title>
+  <link rel="stylesheet" href="/ui/styles.css">
+</head>
+<body>
+  <main class="card">
+    <header class="brand">
+      <span class="logo" aria-hidden="true">🔐</span>
+      <h1>log_api</h1>
+    </header>
+
+    <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
+
+    <!-- Ingresar / Registrarse / Olvidé mi contraseña -->
+    <section id="view-auth" hidden>
+      <nav class="tabs" role="tablist">
+        <button type="button" role="tab" data-tab="login" aria-selected="true">Ingresar</button>
+        <button type="button" role="tab" data-tab="register" aria-selected="false">Crear cuenta</button>
+      </nav>
+
+      <form id="form-login" data-panel="login" novalidate>
+        <label>Email <input name="email" type="email" autocomplete="email" required></label>
+        <label>Contraseña <input name="password" type="password" autocomplete="current-password" required></label>
+        <button type="submit" class="primary">Ingresar</button>
+        <button type="button" class="link" data-tab="forgot">¿Olvidaste tu contraseña?</button>
+        <button type="button" class="link" id="resend-confirmation" hidden>Reenviar email de confirmación</button>
+      </form>
+
+      <form id="form-register" data-panel="register" novalidate hidden>
+        <label>Nombre <input name="name" autocomplete="name"></label>
+        <label>Email <input name="email" type="email" autocomplete="email" required></label>
+        <label>Contraseña <input name="password" type="password" autocomplete="new-password" minlength="8" maxlength="72" required></label>
+        <label>Repetir contraseña <input name="password_confirmation" type="password" autocomplete="new-password" required></label>
+        <p class="hint">Entre 8 y 72 caracteres.</p>
+        <button type="submit" class="primary">Crear cuenta</button>
+      </form>
+
+      <form id="form-forgot" data-panel="forgot" novalidate hidden>
+        <p>Te enviamos un link para elegir una contraseña nueva.</p>
+        <label>Email <input name="email" type="email" autocomplete="email" required></label>
+        <button type="submit" class="primary">Enviar link</button>
+        <button type="button" class="link" data-tab="login">Volver a ingresar</button>
+      </form>
+
+      <div id="social" hidden>
+        <div class="divider"><span>o continuá con</span></div>
+        <div id="social-buttons" class="social"></div>
+      </div>
+    </section>
+
+    <!-- Nueva contraseña (link del email) -->
+    <section id="view-reset" hidden>
+      <h2>Elegí una contraseña nueva</h2>
+      <form id="form-reset" novalidate>
+        <label>Contraseña nueva <input name="password" type="password" autocomplete="new-password" minlength="8" maxlength="72" required></label>
+        <label>Repetir contraseña <input name="password_confirmation" type="password" autocomplete="new-password" required></label>
+        <button type="submit" class="primary">Guardar contraseña</button>
+      </form>
+    </section>
+
+    <!-- Cuenta del usuario logueado -->
+    <section id="view-account" hidden>
+      <div class="who">
+        <div class="avatar" id="avatar" aria-hidden="true"></div>
+        <div>
+          <strong id="account-name"></strong>
+          <div class="muted" id="account-email"></div>
+          <div class="muted small" id="account-meta"></div>
+        </div>
+      </div>
+
+      <details open>
+        <summary>Perfil</summary>
+        <form id="form-profile" novalidate>
+          <label>Nombre visible <input name="display_name" maxlength="255"></label>
+          <label>Ubicación <input name="location" maxlength="255"></label>
+          <label>Bio <textarea name="bio" rows="3"></textarea></label>
+          <button type="submit" class="primary" id="profile-submit">Guardar perfil</button>
+        </form>
+      </details>
+
+      <details>
+        <summary>Cuenta</summary>
+        <form id="form-name" novalidate>
+          <label>Nombre <input name="name" autocomplete="name"></label>
+          <button type="submit">Guardar nombre</button>
+        </form>
+        <form id="form-password" novalidate>
+          <label>Contraseña actual <input name="current_password" type="password" autocomplete="current-password" required></label>
+          <label>Contraseña nueva <input name="password" type="password" autocomplete="new-password" minlength="8" maxlength="72" required></label>
+          <label>Repetir contraseña nueva <input name="password_confirmation" type="password" autocomplete="new-password" required></label>
+          <p class="hint">Cambiarla cierra la sesión en los demás dispositivos.</p>
+          <button type="submit">Cambiar contraseña</button>
+        </form>
+      </details>
+
+      <div class="row">
+        <button type="button" id="logout">Cerrar sesión</button>
+        <button type="button" id="logout-all" class="link">Cerrar sesión en todos los dispositivos</button>
+      </div>
+    </section>
+
+    <section id="view-loading" class="muted center">Cargando…</section>
+  </main>
+
+  <footer class="muted small center">
+    UI de demostración incluida en log_api · <a href="https://github.com/nahuelbrizu/log_api">código</a>
+  </footer>
+
+  <script src="/ui/app.js"></script>
+</body>
+</html>
