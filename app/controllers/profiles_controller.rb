@@ -1,60 +1,65 @@
 class ProfilesController < ApplicationController
+  MAX_PER_PAGE = 100
+
   before_action :authenticate_user!
-  before_action :set_profile, only: :show
   before_action :set_own_profile, only: %i[update destroy]
 
-  # GET /profiles
+  # GET /profiles?page=1&per_page=25
   def index
-    render json: Profile.all
+    page = [params.fetch(:page, 1).to_i, 1].max
+    per_page = params.fetch(:per_page, 25).to_i.clamp(1, MAX_PER_PAGE)
+    scope = Profile.order(:id)
+
+    render json: {
+      profiles: scope.offset((page - 1) * per_page).limit(per_page).map { |p| ProfileSerializer.call(p) },
+      meta: { page: page, per_page: per_page, total: scope.count }
+    }
   end
 
-  # GET /profiles/1
+  # GET /profiles/:id
   def show
-    render json: @profile
+    render json: { profile: ProfileSerializer.call(Profile.find(params[:id])) }
   end
 
-  # POST /profiles
+  # POST /profiles (one profile per user)
   def create
     if current_user.profile
-      return render json: { error: 'El usuario ya tiene un perfil' }, status: :unprocessable_entity
+      return render_error(:conflict, "profile_exists", "The current user already has a profile")
     end
 
-    @profile = current_user.build_profile(profile_params)
-    if @profile.save
-      render json: @profile, status: :created, location: @profile
+    profile = current_user.build_profile(profile_params)
+    if profile.save
+      render json: { profile: ProfileSerializer.call(profile) }, status: :created, location: profile
     else
-      render json: @profile.errors, status: :unprocessable_entity
+      render_validation_errors(profile)
     end
   end
 
-  # PATCH/PUT /profiles/1
+  # PATCH/PUT /profiles/:id
   def update
     if @profile.update(profile_params)
-      render json: @profile
+      render json: { profile: ProfileSerializer.call(@profile) }
     else
-      render json: @profile.errors, status: :unprocessable_entity
+      render_validation_errors(@profile)
     end
   end
 
-  # DELETE /profiles/1
+  # DELETE /profiles/:id
   def destroy
-    @profile.destroy
+    @profile.destroy!
     head :no_content
   end
 
   private
 
-  def set_profile
-    @profile = Profile.find(params[:id])
-  end
-
   # Only the owner may modify or delete a profile; others get 404.
   def set_own_profile
-    @profile = Profile.find_by!(id: params[:id], user_id: current_user.id)
+    @profile = current_user.profile
+    raise ActiveRecord::RecordNotFound unless @profile && @profile.id.to_s == params[:id].to_s
   end
 
   # user_id is never taken from the request: it comes from current_user.
   def profile_params
-    params.require(:profile).permit(:display_name, :location, :bio)
+    params.permit(:display_name, :location, :bio)
   end
 end

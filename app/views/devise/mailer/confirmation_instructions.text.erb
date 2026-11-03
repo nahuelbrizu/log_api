@@ -1,0 +1,7 @@
+Welcome <%= @email %>!
+
+Confirm your account by opening this link:
+
+<%= Auth::Links.confirmation(@token) %>
+
+Confirmation token (for apps that ask for it): <%= @token %>

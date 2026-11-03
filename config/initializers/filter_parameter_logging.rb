@@ -1,8 +1,9 @@
 # Be sure to restart your server when you modify this file.
 
-# Configure parameters to be filtered from the log file. Use this to limit dissemination of
-# sensitive information. See the ActiveSupport::ParameterFilter documentation for supported
-# notations and behaviors.
+# Keep credentials and one-time secrets out of the logs. Partial matches:
+# :token also covers access_token, refresh_token, confirmation_token and
+# reset_password_token. `code` is the OAuth/one-time code, matched exactly.
 Rails.application.config.filter_parameters += [
-  :passw, :secret, :token, :_key, :crypt, :salt, :certificate, :otp, :ssn
+  :passw, :secret, :token, :_key, :crypt, :salt, :certificate, :otp, :ssn,
+  :authorization, :code_verifier, :code_challenge, :state, /\Acode\z/
 ]
