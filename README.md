@@ -101,6 +101,20 @@ todo desde el navegador, sin escribir un frontend:
 - Los links de los emails de confirmación y reseteo abren la UI, que completa el
   paso sola.
 
+| Ingresar | Crear cuenta | Cuenta creada |
+| :---: | :---: | :---: |
+| <img src="docs/screenshots/01-ingresar.png" alt="Pantalla de ingreso" width="260"> | <img src="docs/screenshots/02-crear-cuenta.png" alt="Formulario de registro" width="260"> | <img src="docs/screenshots/03-cuenta-creada.png" alt="Aviso de email de confirmación enviado" width="260"> |
+| **Falta confirmar el email** | **Email confirmado** | **Olvidé mi contraseña** |
+| <img src="docs/screenshots/04-falta-confirmar.png" alt="Error de email sin confirmar con opción de reenviar" width="260"> | <img src="docs/screenshots/05-email-confirmado.png" alt="Aviso de email confirmado" width="260"> | <img src="docs/screenshots/06-olvide-mi-contrasena.png" alt="Formulario de contraseña olvidada" width="260"> |
+| **Cuenta y perfil** | **Ajustes de cuenta** | **Contraseña nueva (link del email)** |
+| <img src="docs/screenshots/07-cuenta.png" alt="Vista de la cuenta con el perfil" width="260"> | <img src="docs/screenshots/08-ajustes-de-cuenta.png" alt="Cambiar nombre y contraseña" width="260"> | <img src="docs/screenshots/09-nueva-contrasena.png" alt="Formulario de contraseña nueva" width="260"> |
+
+También respeta el tema oscuro del sistema:
+
+| Ingresar (oscuro) | Cuenta (oscuro) |
+| :---: | :---: |
+| <img src="docs/screenshots/01-ingresar-oscuro.png" alt="Pantalla de ingreso en tema oscuro" width="260"> | <img src="docs/screenshots/07-cuenta-oscuro.png" alt="Vista de la cuenta en tema oscuro" width="260"> |
+
 Son tres archivos estáticos en [`public/ui/`](public/ui) (HTML, CSS y JS sin
 build), servidos por el mismo Rails, así que no hace falta configurar CORS. Sirven
 también como ejemplo de cliente: [`public/ui/app.js`](public/ui/app.js) muestra
