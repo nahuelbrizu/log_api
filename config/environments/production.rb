@@ -30,13 +30,8 @@ Rails.application.configure do
   # config.action_dispatch.x_sendfile_header = "X-Sendfile" # for Apache
   # config.action_dispatch.x_sendfile_header = "X-Accel-Redirect" # for NGINX
 
-  # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
 
   # Mount Action Cable outside main process or domain.
-  # config.action_cable.mount_path = nil
-  # config.action_cable.url = "wss://example.com/cable"
-  # config.action_cable.allowed_request_origins = [ "http://example.com", /http:\/\/example.*/ ]
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   # config.force_ssl = true
@@ -58,7 +53,22 @@ Rails.application.configure do
   config.action_mailer.perform_caching = false
 
   # Host used in Devise confirmation/password-reset email links.
-  config.action_mailer.default_url_options = { host: ENV.fetch("APP_HOST", "example.com"), protocol: "https" }
+  config.action_mailer.default_url_options = { host: URI(ENV.fetch("API_URL", "https://example.com")).host, protocol: "https" }
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    address: ENV.fetch("MAILER_ADDRESS", "smtp.mailgun.org"),
+    port: Integer(ENV.fetch("MAILER_PORT", 587)),
+    domain: ENV["MAILER_DOMAIN"],
+    authentication: "plain",
+    enable_starttls_auto: true,
+    user_name: ENV["MAILER_USERNAME"],
+    password: ENV["MAILER_PASSWORD"]
+  }
+
+  # Terminate TLS at the proxy but tell Rails requests were HTTPS
+  # (secure cookies, HSTS). Disable with FORCE_SSL=false for plain HTTP setups.
+  config.force_ssl = ENV.fetch("FORCE_SSL", "true") == "true"
+  config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.

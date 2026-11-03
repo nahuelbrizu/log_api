@@ -15,7 +15,12 @@ default: &default
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   username: <%= ENV.fetch("DATABASE_USERNAME", "root") %>
   password: <%= ENV["DATABASE_PASSWORD"] %>
-  socket: /var/run/mysqld/mysqld.sock
+<% if ENV["DATABASE_HOST"].present? %>
+  host: <%= ENV["DATABASE_HOST"] %>
+  port: <%= ENV.fetch("DATABASE_PORT", 3306) %>
+<% else %>
+  socket: <%= ENV.fetch("DATABASE_SOCKET", "/var/run/mysqld/mysqld.sock") %>
+<% end %>
 
 development:
   <<: *default
@@ -50,6 +55,4 @@ test:
 #
 production:
   <<: *default
-  database: app_named_poly_production
-  username: app_named_poly
-  password: <%= ENV["APP_NAMED_POLY_DATABASE_PASSWORD"] %>
+  database: <%= ENV.fetch("DATABASE_NAME", "app_named_poly_production") %>

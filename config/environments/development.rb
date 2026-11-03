@@ -10,24 +10,25 @@ Rails.application.configure do
 
   # Do not eager load code on boot.
   config.eager_load = false
-  config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
+  config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
   config.action_mailer.raise_delivery_errors = false
   config.action_mailer.perform_caching = false
 
-  if ENV['MAILER_USERNAME'].present?
+  if ENV["MAILER_USERNAME"].present?
     config.action_mailer.delivery_method = :smtp
     config.action_mailer.smtp_settings = {
-      address: 'smtp.mailgun.org',
-      # port: 587,
-      domain: ENV['MAILER_DOMAIN'],
-      authentication: 'plain',
-      user_name: ENV['MAILER_USERNAME'],
-      password: ENV['MAILER_PASSWORD']
+      address: ENV.fetch("MAILER_ADDRESS", "smtp.mailgun.org"),
+      port: Integer(ENV.fetch("MAILER_PORT", 587)),
+      domain: ENV["MAILER_DOMAIN"],
+      authentication: "plain",
+      enable_starttls_auto: true,
+      user_name: ENV["MAILER_USERNAME"],
+      password: ENV["MAILER_PASSWORD"]
     }
   else
-    # Without Mailgun credentials, write emails to tmp/mails/ instead.
+    # Without SMTP credentials, write emails to tmp/mails/ instead.
     config.action_mailer.delivery_method = :file
-    config.action_mailer.file_settings = { location: Rails.root.join('tmp/mails') }
+    config.action_mailer.file_settings = { location: Rails.root.join("tmp/mails") }
   end
   # Show full error reports.
   config.consider_all_requests_local = true
@@ -48,8 +49,6 @@ Rails.application.configure do
     config.cache_store = :null_store
   end
 
-  # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
 
   # Don't care if the mailer can't send.
 
@@ -77,5 +76,4 @@ Rails.application.configure do
   # config.action_view.annotate_rendered_view_with_filenames = true
 
   # Uncomment if you wish to allow Action Cable access from any origin.
-  # config.action_cable.disable_request_forgery_protection = true
 end
